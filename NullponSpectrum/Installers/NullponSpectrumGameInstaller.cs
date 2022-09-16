@@ -2,6 +2,9 @@
 using NullponSpectrum.AudioSpectrums;
 using NullponSpectrum.Controllers;
 using Zenject;
+using System;
+using System.Linq;
+using UnityEngine;
 
 namespace NullponSpectrum.Installers
 {
@@ -20,6 +23,13 @@ namespace NullponSpectrum.Installers
             this.Container.BindInterfacesAndSelfTo<Utilities.FloorAdjustorUtil>().FromNewComponentOnNewGameObject().AsSingle().NonLazy();
             this.Container.BindInterfacesAndSelfTo<FloorViewController>().AsCached().NonLazy();
             this.Container.BindInterfacesAndSelfTo<Utilities.VisualizerUtil>().AsCached().NonLazy();
+
+            foreach (var bandType in Enum.GetValues(typeof(AudioSpectrum.BandType)).OfType<AudioSpectrum.BandType>()) {
+                var audio = new GameObject("AudioSpectrom", typeof(AudioSpectrum)).GetComponent<AudioSpectrum>();
+                audio.Band = bandType;
+                this.Container.Bind<AudioSpectrum>().WithId(bandType).FromInstance(audio);
+            }
+
             //this.Container.BindInterfacesAndSelfTo<AudioSpectrum>().FromNewComponentOn(new UnityEngine.GameObject(nameof(AudioSpectrum))).AsCached();
             if (PluginConfig.Instance.CubeVisualizer || PluginConfig.Instance.FrameVisualizer)
             {
